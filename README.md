@@ -1,1 +1,1 @@
-# kore
+# kore-tasks
