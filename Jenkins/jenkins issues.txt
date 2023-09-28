@@ -1,0 +1,22 @@
+1. grunt error occurs when:
+
+	-> there is a mismatch in grunt variable, check script which we are calling for grunt     values
+	-> there is no proper node_modules, install node modules or copy from existing job of other env
+	FYI:
+	* due to grunt error somtimes job may failed and sometime the dist folder will not creat
+----------------------------------------------------------------------------------------------
+2. job successfully build but not reflecting in UI:
+   -> In this case check for grunt error if it is not resolved move/delete workspace and give build again
+   
+----------------------------------------------------------------------------------------------
+3. node_modules error:
+
+Note: If you got any error in installing node modules follow below procedure
+	
+	-> Go to workspace directory 
+	-> then remove old node modules
+	-> nvm use <version_needed>
+	-> Run => npm cache clean --force
+	-> npm install --legacy-peer-deps
+
+

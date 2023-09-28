@@ -1,0 +1,34 @@
+FYI: Banking Assist workbench staging jobs are availble in "staging-korebots" view
+
+url:- https://staging-workbench-external.korebots.com/workbench.
+
+servers:- 
+
+staging-bankassist-workbench-35.121		-	52.2.35.121
+staging-bankassist-workbench-58.189		-	3.212.58.189
+
+Builds:-
+
+1.Workbench Services
+
+-> name	-	Staging-korebots-WorkBench-MicroServices
+-> static service - nginx reload
+
+2.Workbench App (UI)
+
+-> name - staging-workbench
+-> static service - nginx reload
+
+3.Workbench Analytics
+
+-> name - Staging-Workbench-KoreAnalytics
+-> static service - nginx reload
+
+4.Workbench Metadata
+
+-> name - staging-workbench-SMT_Metadata
+-> static service - nginx reload
+
+Post-deployment script:
+
+-> workbench scripts path 	- 	/data/www/WorkbenchService

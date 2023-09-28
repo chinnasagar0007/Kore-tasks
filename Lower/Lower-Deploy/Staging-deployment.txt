@@ -1,0 +1,29 @@
+1. Give all builds
+2. check What are the processes running before deployment
+3. check wheather all processes are started or not after deployment
+4. After deployment Trobleshooting
+ -> if the services not started properly stop and start the clusters
+		/data/start_stop_services.sh stop clustera
+		/data/start_stop_services.sh stop clusterb
+		/data/start_stop_services.sh start clustera
+		/data/start_stop_services.sh start clusterb
+ -> check the logs the moment deployed
+ -> cluster logs (better check BotsServiceAlerts) will show "koreq inited" remaing logs will show port numbers
+ -> for ml => curl http://localhost:6006/ml/healthcheck
+	Response: {"server_status": "Server is up and running", "mongo_status": "Server is connected to Mongo", "redis_status": "Server is connected to Redis"}
+ -> for Lemmatizer =>  curl http://staging-bots-blue.mllemmatizer.korebots.com
+	Response: Server is up and running
+ -> open https://staging-bots.korebots.com/. check FAQ and traing is working or not
+ 
+
+login process to staging mongo:
+
+->	cat /data/kore/mongo_auth.js
+->	mongo
+->	use admin
+->	db.auth('kore','kore123')	=>	admin credentials
+->	show dbs
+
+redis:
+
+redis-cli -h staging-bots-redis-single.dtrtml.ng.0001.use1.cache.amazonaws.com 

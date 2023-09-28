@@ -1,0 +1,24 @@
+1. while doing workassist-pillot deployment take out server from load balancer and do the deployment.
+2. Mongodump should be taken in mongo server only
+3. The workbench services (staging-workbench-external.korebots.com/workbench) available in staging-korebots environment in jenkinsqa
+4. faq:	
+	->	Train job is used to train latest faqs
+
+
+172.18.**.**	-	EU Region
+172.19.**.**	-	US Region
+172.21.**.**	-	JP Region
+172.31.**.**	-	Local Env
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+cat: /data/server_config.txt: No such file or directory
+Environment:       staging-korebots
+current_file_name:        /data/www/tmp/Current_KoreServer_Build.txt
+CurrentzipOnServer:       staging-korebots.b0a393a122d997b351d584244958dcf14e0a9169.KoreServer.zip
+Config File:  /data/www/tmp/Current_KoreServer_Build.txt
+Deployment is KoreServer
+Usage: grep [OPTION]... PATTERN [FILE]...
+Try 'grep --help' for more information.
+
+[Errno 32] Broken pipe
+Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+BrokenPipeError: [Errno 32] Broken pipe
+Downloading ZIP file
+fatal error: An error occurred (404) when calling the HeadObject operation: Key "Blue/KoreServer/staging-korebots..KoreServer.zip" does not exist
+1
+Download failed from S3 for staging-korebots..KoreServer.zip
+
+

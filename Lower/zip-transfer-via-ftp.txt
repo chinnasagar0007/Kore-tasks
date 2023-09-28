@@ -1,0 +1,31 @@
+Task: Upload the file into FTP - IDFC UI Changes (KE-24799)
+	
+	-> 	download zip file 
+	->	login to ftp server and copy zip file to tmp directory
+	->  copy the zip from /tmp to /onpremise-kore/vsftpd/<ENV_name>
+	->	Provide the following credential to reporter of ticket
+	
+-----------------------------------------------------
+ENV: mashreq
+		url : https://korebuilds.kore.com/mashreq/<tar.gz>
+		username : mashreq
+		password : T3ZIAHBp
+-----------------------------------------------------
+ENV: bankmillennium
+
+	url: https://korebuilds.kore.com/bankmillennium/<tar.gz>
+	username: bankmillennium
+	password: 4y71CtBL
+------------------------------------------
+ENV: IDFC
+
+	url: https://korebuilds.kore.com/IDFC/<tar.gz>
+	username: IDFC
+	password: On5DfyxF
+------------------------------------------
+ENV: gerber
+	
+	url: https://korebuilds.kore.com/gerber/<tar.gz>
+	username: gerber
+	password: pg00EDFT
+	

@@ -1,0 +1,15 @@
+Piolot cluster (mashreq-bots.korebots.com)
+
+export KUBECONFIG=/data/keys/pilot-cluster
+ZIP Build: ONPREM_CLUSTER (jenkins.kore.com)
+Image: KUBE_DEPLOY (jenkinsqa)
+
+------------------------------------------------------------------------
+
+1. KoreServer
+
+ZIP  - ONPREM_CLUSTER (Jenkins.kore.com)
+push -
+curl -u devops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/pilot-cluster/qa-wb/release10.1.3/release10.1.3/KoreServer.zip -T KoreServer.zip -k 
+Image - KUBE_DEPLOY -> build Image for koreapp, consumers, scheduler, jumbox
+deployment - 

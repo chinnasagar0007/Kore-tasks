@@ -1,0 +1,3 @@
+idfc-cluster-awsPS (idfc-bots.korebots.com)
+zip: ONPREM-CLUSTER
+Image: IDFC_V10

@@ -1,0 +1,16 @@
+1. WorkBenchService (https://nttpoc-itassist.kore.ai/workbench/) - (KE-35126)
+
+-> Solutions-Onprem-WorkbenchService (job) - jenkinsqa
+-> ITAssist_WorkbenchService (BuildType)
+-> Workbench-NTT-POC (server)
+step1: 
+
+curl --user onpremtest:0BQRUufK -O  https://korebuilds.kore.net/onpremtest/KE-35126/OnPrem.d231894a812205c411e34d15c0f6c20a3920cf3e.ITAssist_WorkbenchService.zip -k
+
+curl --user onpremtest:0BQRUufK -O https://korebuilds.kore.net/onpremtest/KE-35126/versionfile_ITAssist_WorkbenchService.txt -k
+
+step2:
+./it_checkforbuild.sh ITAssist_WorkbenchService
+
+
+

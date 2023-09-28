@@ -1,0 +1,22 @@
+ssh access:
+
+10.0.155.152 - citi-gcb-App-dit2
+
+172.0.2.123 - ntt-prod - squid2
+
+
+
+ebay-dev green trino-1 & 2 - 10.20.0.37 10.21.0.58
+ebay-upgrade-green - all servers
+
+
+
+citi-uat2 - all servers
+citi-gcb-uat-use1-all servers
+citi-gcb-dit2-searchassist - 10.0.150.113
+citi-gcb-nam-dit3-searchassist - 10.0.145.191
+citi-perf - all servers
+citi-aiva-uat - all servers
+
+
+172.21.1.17	ProdBots-JP-CloudConnector-HAProxy

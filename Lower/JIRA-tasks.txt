@@ -1,0 +1,238 @@
+		
+Lower Env Tasks:
+
+
+Task1:	Production Backup verification for shift report
+		->	login to jenkins_prod
+		->	search	Production_Backups_Verification
+		->	Build the job
+		->	copy console output
+
+Task2:	Providing access to new user for jobs in jenkins
+		->	Manage user --> create user
+		->	confirm requested jobs in roles using manage roles
+		->	select assign roles and provide "overall" and "whitelist" in global roles
+		->	Provide access to the jobs requested and whitelist for 
+	
+Staging env:	
+Task3:	Authorize the user_id on Staging Environment
+		->	servers: staging-bots-abe-R9-195.103 	&	staging-bots-abe-R9-39.107
+		->	login to above severs
+		->	vim /data/ChatScript-<Language-name>/authorizedIP.txt
+		->	Now add the mentioned user_id on the top and save the file
+		
+
+SIT env:
+Task4: SIT Environment - Post Deployment Node Scripts Execution
+		->	server:	SIT App-35.168.54.110
+		->	command given to run the script: node bin/addIntegrationConfig.js services/Integrations/providers/
+				=> the above command implies that "node" executing the script "addIntegrationConfig.js" which fetch latest dependencies from services/Integrations/providers/
+				=> now specify the path of node from where node is available to execute script
+				=> To see "node" path and running node services use command "forever list"
+		->	now execute => /data/nvm/versions/node/v14.20.0/bin/node bin/addIntegrationConfig.js services/Integrations/providers/ > /tmp/28494_output.txt
+						=>	">" used to store output as /tmp/28494_output.txt
+		-> Now again use forever list to see node is restarted or not and also check the logs, we get by forever list 
+		
+		
+Solutions pilot:
+
+Task5:	deploy the following commits in Solutions pilot workbench services such as HR Assist Workbench Service, IT Assist Workbench Service.
+		->	open the jobs in jenkins they are with following names 
+			HR Assist Workbench Service		->	 HR Workbench Service
+			IT Assist Workbench Service		->	 Itsm workbench service
+		->	select the build with parameters
+				sha1 : provide workbench_service_commit
+					 :	provide workbench_config_commit
+		->  deploy the patch now we need to install them in server
+		->	open server: Solutions-Pilot-App-1 & Solutions-Pilot-App-2
+			
+			#HR Assist Workbench Service
+			
+			=>	switch to kore user
+			=>	as seen in jenkins zip files of HR Assist Workbench Service job are stored in "WorkbenchService"
+			=>	cd /data/kore/deployment/downloads/WorkbenchService -> deployed zip files available here
+			=>	cd /data/kore/deployment -> here we have "checkforbuild.sh" 
+			=>	./checkforbuild.sh WorkbenchService		=> running script which fetches data from latest zip in WorkbenchService
+			=>	cat /var/www/WorkbenchService/COMMITNUM_WorkbenchService_solutions-pilot	=> 	gives commit_id verify it with workbench_config_commit id given in ticket
+			=> 	use "forever list" to see the logs whether node resatarted or not.
+			
+			#IT Assist Workbench Service
+			
+			=>	cd /data/kore/deployment/downloads/ItsmWorkbenchService		->	deployed zip file of this job stored here
+			=>	cd /data/kore/deployment
+			=>	./checkforbuild.sh	ItsmWorkbenchService
+			=>	cat /var/www/ItsmWorkbenchService/COMMITNUM_ItsmWorkbenchService_solutions-pilot	=> 	gives commit_id verify it with workbench_config_commit id given in ticket
+			=> 	use "forever list" to see the logs whether node resatarted or not.
+		
+		
+Pre-prod:
+Task6:	Preprod: ML dependent module installation in "ML venv" 
+		Step 1: Activate the ML venv 
+		Step 2: Delete the module if it exists already	
+		Step 3: pip install “https://github.com/Koredotcom/MachineLearning/releases/download/R9.3.09_modules/kore-entity-processor-R9.3.09.tar.gz" 
+		Step 4: deactivate ML venv 
+		Step 5: Restart ML
+Procedure for ML (V2):
+	->	servers: integrations-bots-use1-ML-Prediction-9.135, integrations-bots-use1-ML-Prediction-20.167, integrations-bots-use1-ML-Train-19.57
+				 integrations-bots-use1-ML-Train-29.13
+	->	download tar.gz file and copy to server through file zilla
+	->	switch to root user and change owner & group of tar.gz as kore & kore
+		chown kore.kore *.tar.gz
+	->	switch to kore user
+	->	Activate the ML env =>	. /data/py3.6.7/venv-ml/bin/activate
+	->	pip install kore-entity-processor-R9.3.09.tar.gz
+	->	deactivate ML env => deactivate
+	->	/data/etc/init.d/ML stop
+	->  /data/etc/init.d/ML start
+	->	verifying:	ps -ef | grep ML and confirm restart time using date command
+	
+Procedure for ML (V3):
+	->	server ML V3 if availble in the given Environment 
+	->  download tar.gz file and copy to server through file zilla
+	->	switch to root user and change owner & group of tar.gz as kore & kore
+		chown kore.kore *.tar.gz
+	->	switch to kore user
+	->	Activate the ML env =>	. /data/Python-3.9.7/py3.9.7/venv-ml/bin/activate
+	->	pip install kore-entity-processor-R9.3.09.tar.gz
+	->	deactivate ML env => deactivate
+	->	/data/etc/init.d/ML stop
+	->  /data/etc/init.d/ML start
+	->	verifying:	ps -ef | grep ML and confirm restart time using date command
+
+Task7: Preprod: Execute Post Deployment scripts (mongo)
+	   script given: db/version/v101/patches/14493createMissingIndexOnAccounts.js
+	   commmand given: mongo db/version/v101/patches/14493createMissingIndexOnAccounts.js
+	   Note: here mongo nothing but mongo login command ==> mongo /data/kore/mongo_auth.js --host integrations-bots-mongo-rs0-1.korebots.com --port 27017
+
+Procedure:	
+	->	servers: integrations-bots-use1-clustera-2.109	(app-server)
+	->  verify whether the given script available or not in /var/www/KoreServer/db/version/v101/patches/
+	->	history | grep mongo => find mongo command 
+		 mongo /data/kore/mongo_auth.js --host integrations-bots-mongo-rs0-1.korebots.com --port 27017
+	->	cd /var/www/KoreServer/
+	->	mongo /data/kore/mongo_auth.js --host integrations-bots-mongo-rs0-1.korebots.com --port 27017 /db/version/v101/patches/given_script | tee output.txt
+						
+citi-demo:
+Task8:	provide user logs and trace logs
+
+Procedure: 
+	->	servers: citi-demo-clusterab1 & citi-demo-clusterab2
+	->	Now goto path =>	cd /data/ChatScript-multilang/USERS/
+	->	lets do	=>	ls -lrth | grep user_id of ML (user_id will given by developer)
+		now we can see three or four log files that can be copied to tmp and then zipped & to be shared to needy
+		
+Task9: whitilisting jenkins_qa
+Procedure:
+	->	open jenkins repo in git 
+	->	goto path jenkins/automation
+	->	insert email id in "Whitelist_IP_SubAccount_JenkinsALB.sh"
+	->	commit the changes and do the git push
+	->	once this done "Update_jenkins_scripts" job triggered 				
+					
+					
+Task10: finding ML trining requests ==> mongo
+
+Procedure:
+	->	Login to db 
+	->	use koredbm001;
+	->	db.trainlogs.find( { "status":"In Progress"} ).count()
+	->	db.trainlogs.find( { "status":"Waiting"} ).count()
+	
+	
+Task11: Need ML model in staging Environment ml v3 for given "stream_id"  for both dev and published in "ca" language(KE-29683)
+	
+Procedure:
+	->	login to ml-v3 prediction servers
+	->	path: /data/MachineLearning/data/stagingv3/ca
+	->	ls -lrt | grep <stream_id>
+	->	"stream_id" & "stream_id" dev
+	-> 	zip above both and send
+
+Task12: need ml logs in staging(KE-29711)
+	->	servers: 
+			if prediction then both ml prediction servers
+			if trainer then both ml trainer servers
+	->	cd /data/logs/ml
+	
+Task13: Run Script to fetch Traits data in Staging (KE-29690)
+	->	servers: 
+	->	Place the below file in MachineLearning/src path
+	->	Activate ML venv (activate any python version => . /data/py3.6.7/Venv-ml/bin/activate)
+	->	Run the script using  the command python -m TraitsfromDb config=configofpredictionserver (use time before "python" to display how much time it consumes)
+	->	Enter required arguments i.e,startDate (ex: MMDDYYYY),endDate(ex: MMDDYYYY),path(/tmp/result.csv). It is recommended to provide unique names for each 	
+		run to avoid file override.
+	->	zip them and send
+	
+Task14: To give write access to developer in server  ==> add user to /etc/sudoers file as 
+		<username> ALL=(ALL) NOPASSWD: /bin/su - kore
+
+Task15: Creating a job in Jenkins.kore
+Procedure:
+	->	copy from existing job
+	->	modify buildtype, Git link and required shell command changes
+	
+Task16: Adding user to server
+	-> create user nareshg
+	-> login as user -> su - nareshg
+	-> do ssh-keygen in home directory
+	-> copy ssh-key public key to /home/nareshg/.ssh/authorized_keys
+	-> add user to /etc/sudoers file => nareshg ALL=(ALL) NOPASSWD: /bin/su - kore
+	
+Task17: Adding user id to authorized ip.txt
+	-> open app server 
+	-> go to path /data/ChatScript-English
+	-> add given user on top in authorizedIP.txt
+	
+Task18: Sit Environment : Post deployment ChatScript
+	-> if 
+
+
+Task19: configuring multiple environments to single jenkins job
+	->	Refer https://koreteam.atlassian.net/browse/KE-31471
+	->	given --C=$ROLES
+	
+Task20: Upgrade mongo and "Presto to Trino"
+
+Mongo upgrde:
+	
+	-> copy bin of mongo (/data/mango/) from server1 to server 2
+	-> stop mongo service in server 2 and rename existing bin with bin-<version>
+	-> now copy latest bin to /data/mango/
+	-> start the mongo service and check the logs
+	
+Trino upgrade:
+	
+	-> Take back up of presto-cordinator and presto-worker
+	-> Copy trino-cordinator and trino-worker directories (/data) from server 1 to server 2
+	-> copy trino init files to server 2
+	-> now remove etc in trino-cordinator and trino-worker
+	-> now copy etc of presto-cordinator to trino-cordinator and etc of presto-worker to trino-worker
+	-> vim /data/trino-v376-coordinator/etc/node.properties => add path of trino-cordinator
+	-> vim /data/trino-v376-coordinator/etc/catalog/mongo.properties => add mongo credentials
+	-> vim /data/trino-v376-worker/etc/node.properties => add trino worker path
+	-> vim /data/trino-v376-worker/etc/catlog/mongo.properties => add mongo credentials
+	-> now remove presto-cordinator and presto-worker in /data
+	-> now start trino-cordinator and worker
+
+Task21: BankAssist Preprod WorkBench service setup in BankAsssist-QA
+
+step 1: added in zipbuild.sh in jenkinsqa
+step 2: added in deploycode
+step3: added in checkforbuild.sh
+step4: added new config PreprodWorkbenchConfig.json file in /data
+step5: added server block in wb_config.conf and routed workbench/api/* to workbench-preporod
+step6: added upstream block in wb_config.conf with name workbench-preporod at port 3022 
+step7: added upstream block integrations.conf (nginx) with name workbench-preporod at port 3022 
+
+Task22: Executing mongo script having read queris
+
+step1: add "rs.secondaryOk()" in /home/kore/auth.js
+step2: execute the script on secondary
+step3: remove "rs.secondaryOk()" from /home/kore/auth.js
+
+Task23: gcc version upgrade in centos-7
+	
+	
+	
+	
+	

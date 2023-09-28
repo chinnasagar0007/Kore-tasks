@@ -1,0 +1,65 @@
+for i in accounts builder builderx ChatScript-English ChatScript-English-Regression ChatScript-french ChatScript-german ChatScript-multilang ChatScript-spanish EntAdmin FAQ KoreAgentAssist KoreAnalytics KoreServer smartassist webforms websdk agentdesktopv2; do /data/kore/deployment/checkforbuild.sh $i; done
+
+
+
+
+
+┌────┬────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                   │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 11 │ BotsServiceAdmin1      │ default     │ 0.0.5   │ fork    │ 30768    │ 4D     │ 10   │ online    │ 0%       │ 380.9mb  │ kore     │ disabled │
+│ 12 │ BotsServiceAdmin2      │ default     │ 0.0.5   │ fork    │ 30780    │ 4D     │ 10   │ online    │ 0%       │ 384.3mb  │ kore     │ disabled │
+│ 13 │ BotsServiceAdmin3      │ default     │ 0.0.5   │ fork    │ 30791    │ 4D     │ 10   │ online    │ 0%       │ 386.9mb  │ kore     │ disabled │
+│ 7  │ BotsServiceAlerts      │ default     │ 0.0.5   │ fork    │ 30723    │ 4D     │ 10   │ online    │ 0%       │ 288.1mb  │ kore     │ disabled │
+│ 8  │ BotsServiceRuntime1    │ default     │ 0.0.5   │ fork    │ 30736    │ 4D     │ 10   │ online    │ 0%       │ 518.7mb  │ kore     │ disabled │
+│ 9  │ BotsServiceRuntime2    │ default     │ 0.0.5   │ fork    │ 30743    │ 4D     │ 10   │ online    │ 0%       │ 510.1mb  │ kore     │ disabled │
+│ 10 │ BotsServiceRuntime3    │ default     │ 0.0.5   │ fork    │ 30756    │ 4D     │ 10   │ online    │ 0%       │ 498.8mb  │ kore     │ disabled │
+│ 0  │ Koreapp                │ default     │ 0.0.5   │ fork    │ 12642    │ 10h    │ 12   │ online    │ 0%       │ 97.6mb   │ kore     │ disabled │
+│ 6  │ ListenersService       │ default     │ 0.0.5   │ fork    │ 30708    │ 4D     │ 10   │ online    │ 0%       │ 193.2mb  │ kore     │ disabled │
+│ 5  │ ResolverServer         │ default     │ 0.0.5   │ fork    │ 30699    │ 4D     │ 10   │ online    │ 0%       │ 110.0mb  │ kore     │ disabled │
+│ 3  │ SnapshotService        │ default     │ 0.0.5   │ fork    │ 30664    │ 4D     │ 10   │ online    │ 0%       │ 83.0mb   │ kore     │ disabled │
+│ 1  │ idproxy                │ default     │ 0.0.5   │ fork    │ 30624    │ 4D     │ 10   │ online    │ 0%       │ 100.5mb  │ kore     │ disabled │
+│ 2  │ keyserver              │ default     │ 0.0.5   │ fork    │ 30671    │ 4D     │ 24   │ online    │ 0%       │ 103.9mb  │ kore     │ disabled │
+│ 4  │ processflowruntime     │ default     │ 0.0.5   │ fork    │ 30688    │ 4D     │ 10   │ online    │ 0%       │ 275.5mb  │ kore     │ disabled │
+└────┴────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+
+[2023-09-13T00:10:37.768Z] Error: not valid
+    at /data/www/KoreServer/api/middleware/InternalAuthMiddleware/index.js:19:43
+    at tryCatcher (/data/www/KoreServer/node_modules/bluebird/js/release/util.js:16:23)
+    at Promise._settlePromiseFromHandler (/data/www/KoreServer/node_modules/bluebird/js/release/promise.js:547:31)
+    at Promise._settlePromise (/data/www/KoreServer/node_modules/bluebird/js/release/promise.js:604:18)
+    at Promise._settlePromiseCtx (/data/www/KoreServer/node_modules/bluebird/js/release/promise.js:641:10)
+    at _drainQueueStep (/data/www/KoreServer/node_modules/bluebird/js/release/async.js:97:12)
+    at _drainQueue (/data/www/KoreServer/node_modules/bluebird/js/release/async.js:86:9)
+    at Async._drainQueues (/data/www/KoreServer/node_modules/bluebird/js/release/async.js:102:5)
+    at Async.drainQueues (/data/www/KoreServer/node_modules/bluebird/js/release/async.js:15:14)
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+	
+	
+	aws s3 cp kore-entity-processor.tar.gz s3://kore-platform-automation/platform-automation/files
+	
+	
+	
+mongo db/version/v101/patches/76.js
+
+mongo db/version/v101/patches/175_channelUXMapData.js
+
+mongo db/version/v101/patches/280_channelUXMapDataMultiLangSupport.js
+
+mongo db/version/v101/patches/InsertPunctuationAdvanceNLSettings.js
+
+mongo db/version/v101/patches/addOpenAIPrompts.js
+
+
+"cd data/KoreServer/db/version/v101/patches
+
+mongo updatePublicAndPrivateBotVersions.js"
+
+
+node bin/addIntegrationConfig.js services/Integrations/providers
+
+
+KAA:
+
+mongo src/scripts/mongoScripts/updateDispositionSetsDisplayType.js

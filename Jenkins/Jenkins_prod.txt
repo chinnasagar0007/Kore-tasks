@@ -1,0 +1,34 @@
+
+
+The following are the job names availble as below in ONPREM_CLUSTER environment (jenkins prod)
+
+SmartAssistV1					-	OnPrem-SmartAssist-App-v1
+SmartAssistV2					-	OnPrem-SmartAssist-App		
+Chatscript						-	ChatScriptCompile_Centos
+ML								-	NEW_OnPrem-MachineLearning
+FAQ								-	NEW_OnPrem-FAQ
+Builder							-	NEW_OnPrem-BuilderBuild
+Analytics						-	ONPREM-KoreAnalytics
+Entadmin/Bot_adminc_onsole		-	NEW_OnPrem-BotAdmin (Build type is ENT)
+Sales							-	NEW_Onprem-Kore-Sales
+Workflows						-	NEW_OnPrem-WorkflowsBuild
+accounts						-	NEW_OnPrem-Accounts
+webchatapp						-	
+agentdesktopv1					-	
+agentdesktopv2					-	OnPrem-AgentDesktop-UI-V2
+agentassistUI					-	ONPREM-Agentassist-sdk
+webforms						-	NEW_OnPrem-Webforms
+builderx						-	NEW_OnPrem-Builderx
+AgentAssistServicesV2			-	OnPrem-AgentDesktopService
+AgentAssistServicesV1			-	OnPrem-AgentDesktopServicev1
+AgentAssist-angular				-	NEW_OnPrem-AgentAssistAngular-SDK
+KoreServer						-	NEW-ONPREM_KORESERVER
+BotStore						-	NEW_OnPrem-botstore
+AgentAssist-conf				-	ONPREM-AgentAsissist-Conf
+BotSDK/websdk					-	NEW_OnPrem-BotSDK
+
+
+
+Jenkins qa:
+
+Banking							- 	Banking-solutions-QA

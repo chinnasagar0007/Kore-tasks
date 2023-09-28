@@ -1,0 +1,87 @@
+Mashreq-eg	->	mashreq-eg-bots.korebots.com	->	export KUBECONFIG=/data/keys/mashreq-cluster	
+
+1. Chatscripts
+
+step1: 
+-> name - ChatScriptCompile_Centos (jenkins.kore.com, ONPREM_CLUSTER)
+-> ZIP_path - /onpremise-kore/vsftpd/onpremtest/<ticket num> (ftp server)
+-> To push the tar.gz to artifactory
+step2:
+	-> login to ftp server
+	-> cd /onpremise-kore/vsftpd/onpremtest/KE-31870
+	-> remove version file
+	-> if deployed tar.gz had commit number execute below command
+		for i in `ls`; do mv $i `echo $i | cut -d'.' -f3,4` ; done ==> It will cut commit number 
+	-> now push the tar.gz to artifactory 
+	
+	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-English.zip -T ChatScript-English.zip -k
+ 
+	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-English-Regression.zip -T ChatScript-English-Regression.zip -k
+ 
+ 	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-multilang.zip -T ChatScript-multilang.zip -k
+  
+	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-french.zip -T ChatScript-french.zip  -k
+  
+	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-german.zip -T ChatScript-german.zip -k
+ 
+ 
+	curl -udevops:Empedadam@123 -X PUT https://artifactory.korebots.com:443//kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/ChatScript-spanish.zip -T ChatScript-spanish.zip -k
+
+step3:
+	-> build MASHREQ_V10 in jenkinsqa
+	-> select the image name from dropdown
+	-> release version 10.0.4
+	-> Repo: kube
+	-> Don't check last step of build it will overide the configs with initial configs
+
+step4:
+	-> login to jenkinsqa server
+	-> execute mashreq-cluster-cluster export command for idfc  
+		export KUBECONFIG=/data/keys/dev-cluster-awsPS 
+	-> execute below command to get the pod details in a qa-wb namespace
+		kubectl get pods -n qa-wb
+	-> execute below command 
+	    kubectl get deployments -n qa-wb
+	-> execute below command to rollout the pod 
+	    kubectl rollout restart deployment <pod name> -n qa-wb
+	-> execute below command to get last one hour logs of a pod
+		kubectl logs --since=1h sdk-botkit-5db57b95c8-jd76b -n qa-wb
+		
+---------------------------------------------------------------------------------------------
+
+2. Wrapper (wb-app)
+
+Ticket: Deploy Wrapper service onto Mashreq Local(https://mashreq-eg-bots.korebots.com/) (After onto Dev on-prem) both UAE & Egypt
+
+step1: zip build - ONPREM-WorkBench (view) - OnPrem-Workbench-Wrapper (job) - wrapper, wrapper-egypt (buildtype) - jenkins.kore.com
+step2: cut zip 
+step3: push to artifactory
+
+	curl -u devops:Empedadam@123 -X PUT https://artifactory.korebots.com:443/kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/wb/wrapper-egypt.zip -T wrapper-egypt.zip -k
+
+	curl -u devops:Empedadam@123 -X PUT https://artifactory.korebots.com:443/kube/mashreq-cluster/qa-wb/release10.0.4/release10.0.4/wb/wrapper-egypt.zip -T wrapper.zip -k
+	
+step4: build image - MASHREQ_V10 (build), wb-app (image) - jenkinsqa
+step5: export KUBECONFIG=/data/keys/mashreq-cluster
+	   kubectl rollout restart deployments wb-app -n qa-wb
+step6: push zip to onprem
+       cd /onpremise-kore/vsftpd/mashreq (ftp)
+	   ls -lrt release10.0.4.tar.gz => /sftp/dont-delete/release10.0.4.tar.gz
+	   cd /sftp/dont-delete/
+	   rm -rf release10.0.4
+	   tar -xvzf release10.0.4.tar.gz
+	   cd release10.0.4
+	   mv /onpremise-kore/vsftpd/onpremtest/KE-35116/* . (moving zip files to release10.0.4)
+	   rm -rf release10.0.4.tar.gz
+	   tar -cvzf release10.0.4.tar.gz release10.0.4
+	   mdfsum release10.0.4.tar.gz | tee /tmp/md5sum.txt
+	   
+step6: Mail - mashreq update - provide md5sum and commit number
+
+------------------------------------------------------------------------- 
+
+3. Workbench UI (or) Workbench:
+
+step1: zip build - ONPREM-WorkBench (view)  OnPrem-Workbench-workbench (job)
+step2:
+

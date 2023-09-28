@@ -1,0 +1,84 @@
+IDFC Loal deployment:
+
+Builds:
+
+1.IDFC_OnPrem_Botkit:
+
+Step1: 
+	-> build job "IDFC_OnPrem_Botkit" in DB view of jenkins.kore.com
+	-> relese version in build is ticket name by that name tar.gz deployed to ftp server in /onpremise-kore/vsftpd/onpremtest/IDFC/<ticket_num>
+step2:
+	-> login to ftp server
+	-> cd /onpremise-kore/vsftpd/onpremtest/KE-31870
+	-> remove version file
+	-> if deployed tar.gz had commit number execute below command
+		for i in `ls`; do mv $i `echo $i | cut -d'.' -f3,4` ; done ==> It will cut commit number 
+	-> now push the tar.gz to artifactory into path "IDFC/release3.1.3/sdk-botkit/BotKit.tar.gz" (as build file is of botkit service) 
+		curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/sdk-botkit/BotKit.tar.gz -T BotKit.tar.gz -k
+step3:
+	-> build IDFC_LOCAL_KUBE in jenkinsqa
+	-> select the image name from dropdown
+	-> release version 3.1.3
+	-> Repo: kube
+	-> Don't check last step of build it will overide the configs with initial configs
+
+step4:
+	-> login to jenkinsqa server
+	-> execute dev-cluster export command for idfc  
+		export KUBECONFIG=/data/keys/dev-cluster-awsPS 
+	-> execute below command to get the pod details in a qa-wb namespace
+		kubectl get pods -n qa-wb
+	-> execute below command 
+	    kubectl get deployments -n qa-wb
+	-> execute below command to rollout the pod 
+	    kubectl rollout restart deployment <pod name> -n qa-wb
+	-> execute below command to get last one hour logs of a pod
+		kubectl logs --since=1h sdk-botkit-5db57b95c8-jd76b -n qa-wb
+-------------------------------------------------------------------------------------------		
+		
+2. Chatscripts
+
+-> name - ChatScriptCompile_Centos (jenkins.kore.com, ONPREM_CLUSTER)
+-> ZIP_path - /onpremise-kore/vsftpd/onpremtest (ftp server)
+-> To push the tar.gz to artifactory
+   
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-English.zip -T ChatScript-English.zip -k
+
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-English-Regression.zip -T ChatScript-English-Regression.zip -k
+
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-multilang.zip -T ChatScript-multilang.zip -k
+
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-french.zip -T ChatScript-french.zip -k
+
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-german.zip -T ChatScript-german.zip -k
+
+
+   curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/release3.1.3/ChatScript-spanish.zip -T ChatScript-spanish.zip -k
+   
+-> Note: While building just deploy only pods currently running
+
+-------------------------------------------------------------------------------------------
+
+3. BuilderX
+
+IDFC Kube deployment
+--> provide the commit in ONPREM-CLUSTER in jekins.kore.com
+-->	login to FTP server push the JFROG artifactory from FTP server
+-->	
+
+
+--> login to jenkinsqa server 
+--> 
+
+
+refer (KE-31325) 9.1.10HF#10 - IDFC Bank Local On-Prem Environment - BuilderX build
+
+
+
+
+
+
+-------------------------------------------------------------------------------------
+LOGS:
+Getting files from pods => kubectl cp qa-wb/nlp-6964fb76c6-5489g:/tmp/KE-30177/ /tmp/KE-30177/
+To push logs to the public artifactory url is => https://artifactory.korebots.com:443//Public/KE-32097.tar.gz

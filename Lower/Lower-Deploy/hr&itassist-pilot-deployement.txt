@@ -1,0 +1,63 @@
+servers:-
+
+->	Solitions-pilot-App-1	54.84.141.212
+->	Solitions-pilot-App-2	52.54.129.20
+--------------------------------------------
+HR-Builds:
+
+1. Solution Application server (repo: Kore-NativeApp):-
+
+Jenkins name		: Solutions-pilot-HR-CustomService
+./checkforbuild.sh	: not required to execute in server
+Buildtype: HR_ASSIST_PILOT
+-----------------------------------------------
+2. WorkbenchX-App 
+Jenkins name  : Solutions-pilot-WorkbenchX-App
+-----------------------------------------------
+3. Workbench-App
+Solutions-pilot-workbench
+
+-----------------------------------------------------------
+4. Workbench-Services - solution-pilot-HR-WorkBenchService
+-----------------------------------------------
+5. Workbench-Metadata - Solution-Pilot-WB-HR-CSVS
+-----------------------------------------------
+6. Workbench-MetaBots - Solution-Pilot-WB-HR-MetaBots
+-----------------------------------------------
+
+IT-Builds:
+
+1. Solution Application server - Solutions-pilot-ITSM-Custom-Service (buidtype - IT_ASSIST)
+2. Workbench-App - Solutions-pilot-WorkbenchX-App
+3. Workbench-Services - Solutions-pilot-ItsmWorkbenchService
+4. Workbench-Metadata - Solution-Pilot-WB-ITSM-CSVS
+5. Workbench-MetaBots - Solution-Pilot-WB-IT-MetaBots
+
+common-builds:
+
+1.Workbench-Analytics - solutions-pilot-KoreAnalytics
+-----------------------------------------------
+2. Workbench-Auth - Solutions-pilot-Auth
+-----------------------------------------------
+3. Service Mapper tool - Solution-pilot-ServiceMappingTool
+-----------------------------------------------
+4. SMT Metadata - Solution-Pilot-SMT-Metadata
+-----------------------------------------------
+5. Workbench-Sandbox - solution-pilot-WorkbenchSandboxServer
+-----------------------------------------------
+
+
+mongo:-
+
+mongo --host solutions-pilot-mongo1.korebots.com --username kore --password kore123 --port 27017 --authenticationDatabase admin
+
+mongodump --host solutions-pilot-mongo1.korebots.com --username kore --password kore123 --port 27017 --authenticationDatabase admin --db itsm_workbench --collection entityValues --gzip --out /tmp/KE-31642-ITcollectiondbbackup.zip
+
+mongodump --host solutions-pilot-mongo1.korebots.com --username kore --password kore123 --port 27017 --authenticationDatabase admin --db itsm_workbench --gzip --out /tmp/KE-36851-ITdbbackup-2.zip
+
+mongodump --host solutions-pilot-mongo1.korebots.com --username kore --password kore123 --port 27017 --authenticationDatabase admin --db hr_workbench --gzip --out /tmp/KE-36851-HRdbbackup.zip
+
+/tmp/KE-35778/
+
+10.50.0.30
+10.50.0.32

@@ -1,0 +1,2 @@
+Note: While deploying we need to take out the server from LoadBalancer
+ -> for sandbox servers to see forever list we have to switch to "sandbox" user. except forever list no command work here

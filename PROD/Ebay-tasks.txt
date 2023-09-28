@@ -1,0 +1,5 @@
+back up and truncate logs in nlp-ebay:
+
+cd /data/customscripts
+sh backup.sh --> backup logs for english
+sh truncate.sh -> truncate logs for english

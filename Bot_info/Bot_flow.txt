@@ -1,0 +1,13 @@
+nginx:
+
+-> 	some of servers we have nginx conf (integrations.conf) and wb_nginx
+
+-> 	In general nginx run with "integrations.conf" -> do ps -ef | grep nginx to know path
+
+-> 	In "integrations.conf" we are upstreaming all the ports of required services which don't required ssl and we defined the path of these services to host in the web
+
+-> The services which requires ssl are defined in the "sslInfra.conf" and calling "sslInfra.conf" in "integrations.conf"
+
+-> All the static services are defined in the "static.conf" and calling "static.conf" in "integrations.conf"
+
+

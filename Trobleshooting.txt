@@ -1,0 +1,35 @@
+Note: For any debugging issue the first chek is df -h, htop and free -h
+
+1. Bot related:-
+
+case1: Bot auto logout (or) bot home-page invisible:-
+
+	-> If Bot gets auto logout (or) bot page is not visible after bot creation then the reason is the grunt values (env value) of KoreAnalytics,Builder and Builderx are different
+	-> We can fix this my providing all three same grunt value in jenkins jobs and rebuild them.
+	
+case2: URL loaded but login into bot failed or strucked:
+   -> check nginx reloaded or not 
+   -> check any services is restarting and then koreapp logs, nginx logs 
+   -> check nginx & sslinfra conf 
+   -> check job console output 
+   -> now revert KoreServer commit 
+   -> now revert builder commit
+----------------------------------------------------------------------------------------------
+2. BotServiceruntime:-
+
+-> we generally tail BotServiceruntime to see runtime logs of a bot.
+
+----------------------------------------------------------------------------------------------
+3. ML Batch suites or Few shot is failing
+	-> login to ML prediction servers
+	-> check RAM space (free -m) and what consumping more(top command -> shift+m)
+	-> tail the ML logs (tail -f *.log)
+----------------------------------------------------------------------------------------------
+4. BotServiceAdmin restart:
+
+	case1: Any of the mongo replica or arbitar is down -> writes mongo topology error in log
+	case2: due to high load when batch suites are running -> writes log in BotServiceruntime
+---------------------------------------------------------------------------------------------
+5. Resolver/sandbox:
+
+	-> If this service down we get intermittent bot response

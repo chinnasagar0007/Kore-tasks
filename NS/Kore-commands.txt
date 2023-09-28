@@ -1,0 +1,25 @@
+
+1. Push files to public repo of artifactory and can be used for all kube except IDFC
+	curl -u devops:Empedadam@123 -X PUT https://artifactory.korebots.com:443/Public/ -T KE-33604.tar.gz -k
+
+2.To download the zip from ftp server 
+	curl --user onpremtest:0BQRUufK -O  https://korebuilds.kore.com/onpremtest/KE-32276/OnPrem.b7695adebf691ee3db14076ae224b42590c56c8a.ChatScript-English.zip -k
+
+3. To push idfc(dev-cluster) zip files 
+	curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/sdk-botkit/BotKit.tar.gz -T BotKit.tar.gz -k
+
+4. redis-cli -h staging-bots-redis-single.dtrtml.ng.0001.use1.cache.amazonaws.com 
+5. redis-cli -h searchassist-pilot-redis.kore.ai -p 6379
+	
+kube commands:
+
+mongo -u $MONGODB_USER -p $MONGODB_PASS --authenticationDatabase admin --host $DB2_HOST -> To connect to mongo
+
+
+
+
+
+
+
+
+db.btqueues.find({"projectId":"bidp-0fc18e07-349f-5480-acbd-08d5aa98e0f5"}) 

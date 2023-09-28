@@ -1,0 +1,17 @@
+SearchAssist-Pilot deployment:
+
+Jenkins view - searchassistpilot
+1. Findly services
+servers:
+searchassist-pilot-app-17.73
+searchassist-pilot-app-16.96
+
+2.SearchAssist search services
+servers: search assist backend servers
+
+mongo --host 172.31.17.73 --username kore --password kore123 --authenticationDatabase admin
+
+
+elastic search:
+
+curl -XGET "172.31.22.188:9200/_cluster/health?pretty"

@@ -1,0 +1,420 @@
+Jenkins flow 
+1. Pull the commit using GIT_CHECKOUT.sh file
+2. On successful build the data availble with commit will be pulled to jenkins server 
+3. Now this data will be zipped using ZIPBUILD.sh file 
+3. This zip file is pushed from jnekins server to S3BUCKET
+4. When we run checkforbuild.sh the deploycode.sh pull the zip file into the respected server from s3
+
+-------------------------------------------------------------------------------------------------------------
+
+1. Breakdown of shell commands in staging-korebots-KoreServer
+
+SCRIPTPATH=/home/jenkins/buildscripts								=>	path is assigned to variable SCRIPTPATH
+
+export SCRIPTPATH=/home/jenkins/buildscripts						=>	exporting variable
+
+echo "environment selected is ${ENV}"								=>		
+
+COMMITNUM=$($SCRIPTPATH/GIT_CHECKOUT.SH $sha1)						=>	we'll give $sha1 (commit number) as argument to 
+																		/home/jenkins/buildscripts/GIT_CHECKOUT.SH and assign commit number to COMMITNUM
+
+echo "CommitNumber is $COMMITNUM"
+
+
+ZIPFILE=$($SCRIPTPATH/ZIPBUILD.SH $COMMITNUM  $ENV $BUILDTYPE)
+
+echo "zip file is $ZIPFILE"
+
+cd /tmp
+
+mkdir -p /tmp/$ENV-KoreServer
+
+mv $ZIPFILE /tmp/$ENV-KoreServer
+
+echo $ZIPFILE > /tmp/$ENV-KoreServer/versionfile_KoreServer.txt
+
+cd /tmp/$ENV-KoreServer
+
+if [ $SERVER_ZONE == "Blue" ]; then
+
+S3BUCKET=staging-korebots/Blue
+
+else
+
+S3BUCKET=staging-korebots/Green
+
+fi
+
+aws s3 cp $ZIPFILE s3://$S3BUCKET/KoreServer/ --profile awssubaccount
+aws s3 cp versionfile_KoreServer.txt s3://$S3BUCKET/KoreServer/ --profile awssubaccount
+
+#aws s3 cp $ZIPFILE s3://staging-korebots/KoreServer/ --profile awssubaccount
+#aws s3 cp versionfile_KoreServer.txt s3://staging-korebots/KoreServer/ --profile awssubaccount
+
+rm -rf  /tmp/$ENV-KoreServer/$ZIPFILE
+
+2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------
+
+GIT_CHECKOUT.SH:
+ 
+#!/bin/sh -e
+#Description:  This GIT_CHECKOUT.SH script is used to get git commit number.
+#Last Modified:June 16, 2015
+
+
+if [ $# -ne 1 ]
+  then
+    echo "Illegal Arguments Specified, This Script Accepts One Agrument GIT_CHECKOUT.SH <git commit/git branch>"
+    exit 1
+fi
+
+sha1=$1
+sha1=`git rev-parse ${sha1}`
+echo ${sha1}
+git checkout -q  ${sha1}
+
+exit 0
+
+------------------------------------------------------------------------------------------------------------
+
+ZIPBUILD.SH:
+
+#!/bin/sh
+#Description:  This ZIPBUILD.SH script is used zip the workspace to make it easy to upload to artifactory.
+#Company: Kore
+#Last Modified:June 25, 2015
+
+
+if [ $# -ne 3 ]
+  then
+    echo "Illegal Number of Arguments.  This Script Accepts Three Arguments <Git Commit Number> <Environment> <Role>"
+    exit 1
+fi
+
+
+ENV=$2
+SHA=$1
+ROLE=$3
+
+case ${ROLE} in
+KoreServer)
+WORKSPACE=$(echo ${WORKSPACE})
+cd $WORKSPACE;cd ..
+echo "Current Build/Commit Number: $SHA" > workspace/COMMITNUM_${ROLE}_${ENV}
+zip -r -qq ${ENV}.${SHA}.${ROLE}.zip workspace -x "workspace/.git/*"
+mv -f ${ENV}.${SHA}.${ROLE}.zip /tmp/${ENV}.${SHA}.${ROLE}.zip
+echo "${ENV}.${SHA}.${ROLE}.zip"
+;;
+
+----------------------------------------------------------------------------------------------------------
+
+ZIPBUILD_devops.SH:
+
+#!/bin/sh
+#Description:  This ZIPBUILD.SH script is used zip the workspace to make it easy to upload to artifactory.
+#Company: Kore
+#Last Modified:June 25, 2015
+
+
+if [ $# -ne 3 ]
+  then
+    echo "Illegal Number of Arguments.  This Script Accepts Three Arguments <Git Commit Number> <Environment> <Role>"
+    exit 1
+fi
+
+
+ENV=$2
+SHA=$1
+ROLE=$3
+case ${ROLE} in
+KoreAgentAssist|agentassist-sdk|agentassistangular-sdk|KoreAgentAssistv1|agentiassistangular-sdk)
+WORKSPACE=$(echo ${WORKSPACE})
+cd $WORKSPACE;
+echo "Current Build/Commit Number: $SHA" > workspace/COMMITNUM_${ROLE}_${ENV}
+zip -r -qq ${ENV}.${SHA}.${ROLE}.zip workspace -x "workspace/.git/*"
+mv -f ${ENV}.${SHA}.${ROLE}.zip /tmp/${ENV}.${SHA}.${ROLE}.zip
+echo "${ENV}.${SHA}.${ROLE}.zip"
+;;
+
+----------------------------------------------------------------------------------------------------------
+
+Checkforbuild.sh:
+
+####     Created By Kore          ###
+#####################################
+
+#Include s3download script to get the latest date and file
+source /data/kore/deployment/download.sh
+
+#Build Name [KoreServer, DesktopWeb, EntAdmin, WorkFlows, builder, KoreWebPortal, FAQ, MachineLearning ]
+buildname=$1
+
+#Server Release
+ReleaseVer="$4"
+
+#Commit Number
+#Commit="$5"
+
+# Environment Name [On-Prem]
+environment="On-Prem"
+echo "Environment:      " $environment
+
+#Download Location
+download_location=/data/kore/deployment/downloads
+
+#Temp Directory
+temp=/data/www/tmp
+mkdir -p /data/www/tmp
+
+current_file=$temp"/Current_"$buildname"_Build.txt"
+
+echo "current_file_name:        "$current_file
+
+if [ -f "$current_file" ];
+        then
+                currentzip=$(cat "$current_file")
+				echo "CurrentzipOnServer:       "$currentzip
+        else
+                currentzip="No download"
+                echo "currentzipOnServer:       "$currentzip
+fi
+
+if [ "$buildname" == "KoreServer" ]; then
+                config_file="/data/www/tmp/Current_KoreServer_Build.txt"
+                servercommit=`cat $config_file |awk -F'.' '{print $2}'`
+
+        elif [ "$buildname" == "DesktopWeb" ]; then
+                config_file="/data/www/tmp/Current_DesktopWeb_Build.txt"
+                servercommit=`cat $config_file |awk -F'.' '{print $2}'`
+		else
+                config_file="No config_file"
+                servercommit="No Commit. Please initiate download for latest build and deploy code"
+fi
+
+echo "Config File: " $config_file
+
+#Get KoreServer Builds
+
+        getBuildFile $buildname
+        echo "buildname:        " $buildname
+        echo "latestzip:        " $latestzip
+        echo "korecommit:       " $korecommit
+        echo "servercommit:     " $servercommit
+
+if [ "$korecommit" != "$servercommit" ];then
+
+        # Deploy Code
+        deploy_log=$temp"/deploycode_"$buildname".txt"
+        /data/kore/deployment/deploycode.sh $buildname $latestzip $download_location/$buildname  > "$deploy_log"
+        # Deploy Code Ends
+        mv -f "$temp"/Current_"$buildname"_Build.txt "$temp"/Previous_"$buildname"_build.txt
+        echo $latestzip > "$current_file"
+        sudo  /data/etc/init.d/nginx reload
+
+        echo "Deployment done for build $buildname with $latestzip "
+else
+        echo "No Recent Updates"
+fi
+
+echo "######################################################"
+
+----------------------------------------------------------------------------------------------------------
+
+download.sh:
+
+#!/bin/bash
+##### Script for downloading files from LFTP Bucket #######
+###                     Create By KORE                   ###
+#######################################################
+
+function getBuildFile(){
+  buildname=$1
+  S3BUCKET=$2
+  download_location=$3
+
+echo "Deployment is $buildname"
+
+          latestdate=$(aws s3 ls s3://$S3BUCKET/$buildname/ | grep $environment.*.$buildname.zip |sort -n | tail -n 1 | awk '{print $1}')
+          latestcommit=$(aws s3 ls s3://$S3BUCKET/$buildname/ | grep $latestdate |  grep $environment.*.$buildname.zip|sort -n | tail -n 1 |awk -F. '{print $2}')
+          latestzip=$environment.$latestcommit.$buildname.zip
+
+          ## S3 download
+         cd $download_location/$buildname
+         echo "Downloading ZIP file"
+         aws s3 cp  s3://$S3BUCKET/$buildname/$latestzip . --only-show-errors
+         result=$(echo $?)
+         echo $result
+         echo $latestzip > $download_location/$buildname/versionfile_$buildname.txt
+
+         if [ "$result" -ne 0 ]; then
+                 echo "Download failed from S3 for $latestzip" | tee -a /tmp/log
+                 exit 1
+         fi
+
+         echo "$latestzip"
+         echo "$latestcommit"
+		 }
+
+----------------------------------------------------------------------------------------------------------
+
+deploycode.sh
+
+#KoreServer,builder,DesktopWeb,EntAdmin,WorkFlows,OutLook
+source ~/.bash_profile
+
+BUILD_TYPE=$1
+FILE=$2
+download_location=$3
+
+DEPLOYPATH=/var/www
+BACKUPPATH=/var/www/backup
+
+mkdir -p $BACKUPPATH
+
+cd $download_location
+unzip -o $FILE
+
+if [[ $? == 0 ]] ; then
+echo "Successly Unzipped"
+#rm -rf $download_location/$FILE
+else
+echo "Unzip failed "
+exit 1
+fi
+
+LATEST=backup
+
+DATE=$(date +%Y-%m-%d:%H:%M:%S)
+echo "Taking backup to $BACKUPPATH"
+
+echo "build type is $BUILD_TYPE"
+
+
+if [[ -L "/var/www/$BUILD_TYPE" ]]; then
+unlink /var/www/$BUILD_TYPE
+else
+echo "before removing"
+echo "taking backup"
+fi
+
+case ${BUILD_TYPE} in
+
+agentassistangular-sdk)
+rm -rf $DEPLOYPATH/$BUILD_TYPE.$LATEST
+mv $DEPLOYPATH/$BUILD_TYPE $DEPLOYPATH/$BUILD_TYPE.$LATEST
+mkdir -p $DEPLOYPATH/$BUILD_TYPE
+cd $download_location
+mv workspace/AgentAssistAngular/ $BUILD_TYPE
+mv workspace/COMMITNUM_agentassistangular-sdk_UATBOT $BUILD_TYPE/
+mv $BUILD_TYPE $DEPLOYPATH/
+#ln -sf /data/kore/deployment/Configs/.env $DEPLOYPATH/$BUILD_TYPE/.env
+#/data/etc/init.d/KoreAgentAssist stop
+#/data/etc/init.d/KoreAgentAssist start
+sudo /data/etc/init.d/nginx reload
+;;
+
+KoreServer)
+rm -rf $DEPLOYPATH/$BUILD_TYPE.$LATEST
+mv $DEPLOYPATH/$BUILD_TYPE $DEPLOYPATH/$BUILD_TYPE.$LATEST
+cd $download_location
+mv workspace $DEPLOYPATH/$BUILD_TYPE
+/bin/ln -sf /data/kore/deployment/Configs/KoreConfig.json /var/www/KoreServer/config/KoreConfig.json
+/bin/sed -i "/port_in_redirect off;/i add_header Cache-Control 'no-cache';" /var/www/KoreServer/config/nginx/static.conf
+/bin/sed -i "s/^user.*/user kore kore;/"  /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i '1,/server_name\s_/s/server_name\s_/server_name uat.kore.ai/' /var/www/KoreServer/config/nginx/integrations.conf
+
+/bin/sed -i 's/listen 80 default_server;/listen 80 default_server;/g' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/listen 80 ;/listen 80;/g' /var/www/KoreServer/config/nginx/integrations.conf
+
+/bin/ln -sf /data/kore/deployment/Configs/ssl.conf /var/www/KoreServer/config/nginx/common/ssl.conf
+/bin/ln -sf /data/kore/deployment/Configs/sslInfra.conf /var/www/KoreServer/config/nginx/common/sslInfra.conf
+/bin/sed -i '0,/#listen 443 ssl;/ s/#listen 443 ssl;/listen 443 ssl default_server;/' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/#listen 443 ssl;/listen 443 ssl;/g' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/server_name uat.kore.ai;/server_name uat.kore.ai;/g' /var/www/KoreServer/config/nginx/integrations.conf
+#/bin/sed -i 's/listen 80 default_server;/listen 80;/g' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/include common\/sslTcp.conf/#include common\/sslTcp.conf/g' /var/www/KoreServer/config/nginx/integrations.conf
+#/bin/sed -i 's/include common\/sslInfra.conf/#include common\/sslInfra.conf/g' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i  "s#set_real_ip_from 10.0.0.0/16;#set_real_ip_from 10.20.0.0/16;#g" /var/www/KoreServer/config/nginx/integrations.conf
+/bin/cp -p /data/kore/deployment/Configs/KoreConfigEncryption.json /var/www/KoreServer/config/configs/KoreConfigEncryption.json
+/bin/cp -r /data/kore/deployment/Configs/keyserver.json.enc /var/www/KoreServer/config/
+/bin/cp -r /data/kore/deployment/Configs/cs_init* /var/www/KoreServer/config/
+/bin/cp -r /var/www/KoreServer.backup/config/configs/bot_liveperson.json /var/www/KoreServer/config/configs/bot_liveperson.json
+/bin/cp -r /var/www/KoreServer.backup/KoreFileSystem /var/www/KoreServer/
+/bin/sed -i 's/80/80/' /var/www/KoreServer/config/nginx/common/resourceresolver_server.conf
+nginx_dir=$(echo /data | sed 's_/_\\/_g')
+find /var/www/KoreServer/config/nginx/ -type f -exec sed -i -e "s/\/var\/log/$nginx_dir\/logs/g" {} \;
+find /var/www/KoreServer/config/nginx/ -type f -exec sed -i -e "s/\/var\/run/$nginx_dir\/run/g" {} \;
+/bin/sed -i  "/^http {/a \\\n proxy_temp_path $nginx_dir/run/nginx; \n fastcgi_temp_path $nginx_dir/run/nginx; \n uwsgi_temp_path $nginx_dir/run/nginx; \n scgi_temp_path $nginx_dir/run/nginx; \n client_body_temp_path $nginx_dir/run/nginx;" /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i '/^http {/a \\tserver_names_hash_bucket_size 128;' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/client_max_body_size 10m;/client_max_body_size 100m;/' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i 's/HOST_PROTOCOL-FQDN/https/' /var/www/KoreServer/config/nginx/integrations.conf
+/bin/sed -i "s/15mb/100mb/" /var/www/KoreServer/bootmodules/AppServer/boot.js
+/bin/cp -r /data/kore/deployment/Configs/remove_test_files.js /var/www/KoreServer/
+/bin/cp -r /data/kore/deployment/Configs/test_directories /var/www/KoreServer/
+
+cd /var/www/KoreServer/
+#/data/nvm/versions/node/v14.18.3/bin/node remove_test_files.js test_directories
+KORE_CONFIG_PATH=/var/www/KoreServer/config /data/nvm/versions/node/v14.18.3/bin/node /var/www/KoreServer/UpgradeServer.js rabbitmq
+
+/data/start_stop_services.sh stop clustera
+/data/start_stop_services.sh stop clusterb
+/data/start_stop_services.sh start clustera
+/data/start_stop_services.sh start clusterb
+
+;;
+esac
+
+mkdir -p /var/www/logs/
+chown -R kore:kore $DEPLOYPATH
+
+
+exit 0
+
+----------------------------------------------------------------------------------------------------------------------
+
+MARKETPLACE.SH
+
+echo "workspace is ${WORKSPACE}"
+cd ${WORKSPACE}
+pwd
+#grunt clean;
+#grunt jshint;
+#grunt --ssh=${GIT_COMMIT}} --force;
+grunt build
+echo "after grunt command"
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+                            
+
+
+
+
+
+
+

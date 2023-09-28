@@ -1,0 +1,48 @@
+Note: All logs of "chatscript  cpuprofile  faq  ml  nginx  nodeservices  nodeservices_logs64  rabbitmq" are availablle in the path where node logs are there. 
+	  Log path of nodeservices obtained by using forever list
+NOte: In some servers nginx logs are availablle in /data/logs
+
+CS logs:
+
+for given stream_id or user_id
+-> App server
+-> /data/ChatScript-English/USERS
+-> ls -lrth | grep <stream_id> or <user_id>
+
+ML logs:
+
+for given stream_id or user_id
+-> ML server
+-> /data/logs/ml
+-> grep -irl "<stream_id> or <user_id>
+for troubleshoot
+-> ML server
+-> /data/logs/ml
+-> tail -f *.log
+
+Kore_config path:
+
+/data/kore/deployment/Configs/KoreConfig.json
+
+ML model V3 staging:
+
+-> /data/MachineLearning/data/stagingv3
+
+sudoers file path = /usr/bin/sudo
+
+COMMITNUM path:
+
+Note: We'll get COMMITNUM path from using find /data -type f -name *COMMIT*
+
+/data/ChatScript-English/COMMITNUM
+/var/www
+/data/www
+
+
+
+
+
+
+
+
+

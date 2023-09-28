@@ -1,0 +1,14 @@
+clearing disk full issue
+
+step1: scale down all the pods
+
+	kubectl scale --replicas=0 <deployment-name> -n <namespace> 
+
+step2: login to jumbox
+	cd /logs & remove old pod logs or all pods except current jumbox
+
+FYI: Jumbox disk is shared b/w all pods (NFS)
+
+step3: scale up all the pods
+	
+	kubectl scale --replicas=1 <deployment-name> -n <namespace> 

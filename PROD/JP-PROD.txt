@@ -1,0 +1,62 @@
+Note: Check all the services before deploying and note them
+---------------------------------------------------------------------------------------------------------------------
+clusters:
+
+ListenerService - /data/kore/deployment/checkforbuild.sh KoreServer singleserver 
+---------------------------------------------------------------------------------------------------------------------
+sandbox:
+
+sudo su - sandbox
+pm2 list
+sudo su - kore
+/data/kore/deployment/checkforbuild.sh KoreServer sandbox
+check: app listening at http://:::6000
+---------------------------------------------------------------------------------------------------------------------
+AgentAssist:
+
+KoreServer - /data/kore/deployment/checkforbuild.sh KoreServer KoreAgentAssist
+
+for i in agentassistangular-sdk agentassist-conf  KoreAgentAssist agentdesktopv2 ; do /data/kore/deployment/checkforbuild.sh $i ; done
+---------------------------------------------------------------------------------------------------------------------
+clusterabe:
+
+check pm2,nginx,haraka,faq and chat
+cd /data/kore/deployment/downloads/
+for i in KoreServer builder ChatScript-English ChatScript-English-Regression ChatScript-french ChatScript-german ChatScript-multilang ChatScript-spanish FAQ KoreAnalytics kore-sales accounts webforms builderx websdk smartassist agentassist-conf agentassistangular-sdk agentdesktopv2 ; do /data/kore/deployment/checkforbuild.sh $i; done
+check pm2,nginx,haraka,faq and chat
+
+---------------------------------------------------------------------------------------------------------------------
+FAQ:
+
+curl http://localhost:5005/faq/healthcheck
+
+---------------------------------------------------------------------------------------------------------------------
+ChatScript:
+
+healthcheck:- 
+
+printf "st-a7b1a91a-4043-5525-b22f-cc9b1a5c83d2+u-7a1ff6da-8e98-5bee-b0a7-37787d69535\0kora\0[{"appUserId":"u-7a1ff6da-8e98-5bee-b0a7-37787d69535","streamId":"st-a7b1a91a-4043-5525-b22f-cc9b1a5c83d2","streamName":"Sample","testCS":true,"privateBotVersion":"1616651459"}] \0" | curl -s telnet://localhost:1024
+
+response: 
+
+[{"msgmapKeyValueObjs": {} , "pausedContextIds": [] , "apiDetails": [] , "volley": 28690, "usedtime": 6}  ] Glad I could help.[kore@ip-172-19-4-201 ~]$
+
+---------------------------------------------------------------------------------------------------------------------
+
+MachineLearning:-
+
+/data/kore/deployment/checkforbuild.sh MachineLearning
+
+sh /data/start_stop_services.sh start MachineLearning
+
+server.main -> curl http://localhost:6006/ml/healthcheck
+
+embeddings -> curl -L -X POST "http://localhost:2020/embeddings/encode" -H "Content-Type: application/json" --data "{\"transformer\": \"universal-sentence-encoder\", \"sentences\": [\"Mela verde\"], \"language\": \"en\"}"
+
+lemmatizer -> curl http://localhost:6007/ml/healthcheck
+
+---------------------------------------------------------------------------------------------------------------------
+
+mongo:-
+
+mongo --host bots-mongo-3.kore-prod-jp-aws.com -u korejp -p '=!j5bJ#T' --authenticationDatabase=admin

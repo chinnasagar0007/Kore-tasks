@@ -1,0 +1,121 @@
+General commands:-
+
+Linux:- 
+
+find -type f -mtime +3 -delete		=>	It will delete files creted more than 3 days ago
+find -type f -mtime -3 -delete		=>	It will delete files within 3 days
+find -type f -mtime +4 -exec ls -lrt {} \;	=> find and list the files created more than 4 days ago
+find ./* -iname "*.zip" | xargs rm	=> delete all zips in all directories of present directory
+find -type f -mtime +3 -iname "*.heapsnapshot" -delete => delete .heapsnapshot files created more than 3 days ago
+truncate -s 1M nginxLemmatizer.log	=>	It will shrink the size of "nginxLemmatizer.log" to 1Mb
+du -sh * 							=>	Displays summerize size of all directories available in present working directory
+du -sh * | grep G 					=> 	Displays the files or directories which having sizes in "Gbs"
+du -sh .[^.]* | grep G				=>	Displays size of all hidden files/directories
+ll */*.zip 							=>	Displays all zip files available in each and every directory of present working directory
+grep -ril "string_name"				=>	It Displays files which includes mentioned string_name
+tail -f *.log						=>	tail all logs with ".log"
+grep -C 20 "2023-01-06T1[3-4]:[0-9][0-9]:[0-9][0-9]" /data/logs/mongod.log | tee /tmp/mongo.log =>	To see logs in one hour duration 13th hour to 14th hour
+ssh-keygen -y -f id_rsa				=>	To check valid key-pair. It will display id_rsa.pub value
+
+-----------------------------------------------------------------
+for loop commands:
+
+for i in $(cat 1.txt); do cp -r /tmp/$i /tmp/new/; done => 1.txt has some files names that files are in tmp and they are copied to /tmp/new/
+
+for i in $(cat ip.txt); do scp <source> <destination>; done => It will copy files from source to destiantion of all server ips. which are available in ip.txt
+
+for i in $(cat /tmp/nodelist.txt); do sed -i 's/v16.19.1/v16.20.2/g' $i; done
+
+
+----------------------------------------------------------
+forever:-
+
+forever start service_number		=>	To start node service
+forever stop service_number			=>	To stop node service
+Note: service_number available in forever list
+forever restat service_number		=>	To restart particular node service
+forever restartall					=>	To restart all node services	
+-----------------------------------------------------------------
+
+Mongo quiries:-
+
+db.trainlogs.find( { "status":"In Progress"} ).count()						=>		overall training in progress
+db.trainlogs.find( { "status":"Waiting"} ).count()							=>		overall training in waiting
+db.trainlogs.find({"status":"Waiting","payload.nlpVersion":"3"}).count()	=>		Training in waiting for V3
+db.trainlogs.find({"status":"Waiting","payload.nlpVersion":"2"}).count()	=>		Training in waiting for V2
+db.trainlogs.find({"status":"In Progress","payload.nlpVersion":"3"}).count()=>		Training In progress for V3
+db.trainlogs.find({"status":"In Progress","payload.nlpVersion":"2"}).count()=>		Training In progress for V2
+db.trainlogs.update({ "status":"Waiting", "payload.nlpVersion":"2"},{$set: {"status": "Failed"}}, {"multi": true}) => To clear the ques in waiting for V2
+db.trainlogs.updateMany({"status":"Waiting"}, {$set:{"status":"Failed"}})	=>		To clear the queue in waiting
+db.trainlogs.updateMany({"status":"In Progress"}, {$set:{"status":"Failed"}})	=>		To clear the queue in progress
+db.trainlogs.find({"streamId":"st-956dc6c4-449d-5223-946d-89ed6b463f5a"})		=>	To find particular bot using stream id
+cfg =rs.conf ()
+rs.status()
+show dbs ()
+
+----------------------------------------------------------------------------------------
+
+Mongodump commands:
+
+-> /data/mongo/bin/mongodump --host 172.31.9.167 --username kore --password kore123 --authenticationDatabase admin --db koredbm001 --collection clientsdks --out /tmp/clientsdks_backup_17-01-2023		==> 	takes backup of collection (clientsdk) of db (koredbm001) to /tmp
+
+-> /data/mongo/bin/mongodump --host 172.31.25.233 --username kore --password kore123 --authenticationDatabase admin --db workbench --out /tmp/workbench_database_KE-30683						=> Takes backup of db (workbench) to /tmp
+
+-------------------------------------------------------------------------------------------
+
+python commands:
+
+-> pip freeze | grep -i kore-entity 	=>  used to see existing version related to kore-entity
+
+---------------------------------------------------------------------------------------------
+
+kube commands:
+
+1. To copy files from pods to host server
+	kubectl cp qa-wb/nlp-6964fb76c6-5489g:/tmp/KE-30177/ /tmp/KE-30177/
+2. kubectl scale --replicas=1 deployment app -n qa-wb
+3. kubectl config get-contexts
+4. kubectl config use-context jenkins@charter-cluster.us-east-1.eksctl.io
+5. kubectl config current-context
+6. To connect to mongo from jumbox
+	mongo -u $MONGODB_USER -p $MONGODB_PASS --authenticationDatabase admin --host $DB2_HOST 
+7. To move configmaps to tmp
+	kubectl get configmap qa-wb-wrapper-config -n qa-wb -o yaml > /tmp/qa-wb-wrapper-config.yml 
+--------------------------------------------------------------------------------------------
+
+ftp:-
+
+-> curl --user onpremtest:0BQRUufK -O https://korebuilds.kore.com/onpremtest/KE-32276/OnPrem.a94c93e596872b87716c64513b484ce55402d59a.MachineLearning.zip -k => To download the zip after build in ONPREM-CLUSTER 
+
+----------------------------------------------------------------------------------------------
+
+rabbitmq:
+
+-> rebbitmqctl status => To see rabbitmq version and status 
+
+
+---------------------------------------------------------------------------------------------
+ftp:
+
+1. Push files to public repo of artifactory and can be used for all kube except IDFC
+	curl -u devops:Empedadam@123 -X PUT https://artifactory.korebots.com:443/Public/ -T KE-33604.tar.gz -k
+
+2.To download the zip from ftp server 
+	curl --user onpremtest:0BQRUufK -O  https://korebuilds.kore.com/onpremtest/KE-32276/OnPrem.b7695adebf691ee3db14076ae224b42590c56c8a.ChatScript-English.zip -k
+
+3. To push idfc(dev-cluster) zip files 
+	curl -u 'devops:K0re@admin@321' -X PUT https://artifacts.korebots.com:443/artifactory/IDFC/release3.1.3/sdk-botkit/BotKit.tar.gz -T BotKit.tar.gz -k
+	
+---------------------------------------------------------------------------------------------
+redis:
+
+1. redis-cli -h staging-bots-redis-single.dtrtml.ng.0001.use1.cache.amazonaws.com 
+2. redis-cli -h searchassist-pilot-redis.kore.ai -p 6379
+
+----------------------------------------------------------------------------------------------
+
+Trino:
+
+To login to trino through cli:
+-> cd /data/trino-coordinator-1/bin/
+-> ./trino --server=localhost:7001 --catalog=analyticsmongo --schema=koredbm001

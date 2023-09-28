@@ -1,0 +1,7 @@
+Tcp check failure: 7078 krypton09
+
+docker ps | grep krypton09
+docker ps -a | grep krypton09
+docker rm krypton09
+
+docker run -d --name krypton09 -p 7078:8078 -p 9009:8091 --ipc host -it --volume /data/Conversational-AI/krypton-nqas-4.5.0-202006260940/standalone-config/krypton.yaml:/var/local/Nuance/Krypton/config/krypton.yaml:ro --volume /data/Conversational-AI/krypton-nqas-4.5.0-202006260940/runtimeconfig:/var/local/Nuance/Krypton/config/runtimeconfig --volume /usr/local/Nuance/Data_Packs:/usr/local/Nuance/Data_Packs:ro --volume /data:/data:ro --env NODE_ENV=krypton ncr.nuance.com/xasraas-docker-prod/krypton/nkr:4.5.0-gl557693

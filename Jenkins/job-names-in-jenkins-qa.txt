@@ -1,0 +1,21 @@
+citi-demo:
+
+Agentassist-V2		-		citi-demo-koreagentassist
+Agentassist-V1		-		citi-demo-KoreAgentAssist-v1
+
+
+
+
+
+Banking				- 	Banking-solutions-QA
+
+
+Staging:
+
+
+
+
+
+
+
+
